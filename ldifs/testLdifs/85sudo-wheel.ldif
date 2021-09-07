@@ -1,0 +1,7 @@
+dn: cn=%wheel,ou=SUDOers,dc=ldap1,dc=4wxyz,dc=com
+objectclass: top
+objectClass: sudoRole
+cn: %wheel
+sudoUser: %wheel
+sudoHost: ALL
+sudoCommand: ALL

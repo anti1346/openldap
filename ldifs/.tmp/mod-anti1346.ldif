@@ -1,0 +1,4 @@
+dn: uid=anti1346,ou=People,dc=ldap,dc=4wxyz,dc=com
+changetype: modify
+add: pwdReset
+pwdReset: TRUE

@@ -1,0 +1,10 @@
+dn: cn=%infra,ou=SUDOers,dc=ldap1,dc=4wxyz,dc=com
+objectclass: top
+objectClass: sudoRole
+cn: %infra
+sudoUser: ldaptestuser
+sudoHost: ALL
+sudoRunAsUser: ALL
+sudoRunAsGroup: ALL
+sudoCommand: ALL
+sudoOrder: 5

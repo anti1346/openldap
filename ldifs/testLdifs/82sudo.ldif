@@ -1,0 +1,5 @@
+dn: ou=SUDOers,dc=ldap1,dc=4wxyz,dc=com
+objectClass: top
+objectClass: organizationalUnit
+ou: SUDOers
+description: sudoers object
