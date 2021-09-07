@@ -12,7 +12,7 @@ ldifDirectory=.ldifs
 
 OLolcRootPW='{SSHA}RqXZJWxwxEXqybRWFN+eWi/NpUDhnLVJ'
 OLolcRootPPW='passwd1!'
-OLdomain='ldap.4wxyz.com'
+OLDomain='ldap.4wxyz.com'
 OLolcSuffix='dc=ldap,dc=4wxyz,dc=com'
 
 
@@ -20,8 +20,8 @@ OLolcSuffix='dc=ldap,dc=4wxyz,dc=com'
 if [[ -z `grep ldap /etc/hosts` ]];
 then
 cat <<EOF >> /etc/hosts
-$ldapIp1        $ldapHostname1  $ldapFqdn1
-$ldapIp2        $ldapHostname2  $ldapFqdn2
+$ldapIp1	$ldapHostname1  $ldapFqdn1
+$ldapIp2	$ldapHostname2  $ldapFqdn2
 EOF
 fi
 
@@ -62,7 +62,6 @@ else
      /usr/libexec/openldap \
      /usr/share/doc/openldap-* \
      /usr/share/openldap-servers
-
     yum reinstall -y --quiet compat-openldap \
      openldap openldap-servers openldap-clients \
      openldap-servers-sql openldap-devel
@@ -88,6 +87,7 @@ add: olcRootPW
 #replace: olcRootPW
 olcRootPW: ${OLolcRootPW}
 EOF
+
 ldapadd -Y EXTERNAL -H ldapi:/// -f ${ldifDirectory}/chrootpw.ldif
 
 
@@ -134,7 +134,6 @@ EOF
 chmod +x ${ldifDirectory}/certificate.sh
 sh ${ldifDirectory}/certificate.sh
 
-#rsync -avz --delete ${ldapIp2}::ldap_certs /etc/openldap/certs
 chown -R ldap:ldap /etc/openldap/certs/${OLDomain}.*
 chmod o-r /etc/openldap/certs/${OLDomain}.key
 
@@ -170,13 +169,13 @@ sed -i 's/SLAPD_URLS=\"ldapi:\/\/\/\ ldap:\/\/\/\"/SLAPD_URLS=\"ldapi:\/\/\/\ ld
 
 
 ###rsyslog(slapd)
-cat <<EOF > ${ldifDirectory}/18loglevel.ldif
+cat <<EOF > ${ldifDirectory}/rsyslog.ldif
 dn: cn=config
 changetype: modify
 replace: olcLogLevel
 olcLogLevel: stats
 EOF
-ldapmodify -Y EXTERNAL -H ldapi:/// -f ${ldifDirectory}/18loglevel.ldif
+ldapmodify -Y EXTERNAL -H ldapi:/// -f ${ldifDirectory}/rsyslog.ldif
 if [[ -z `grep slapd.log /etc/rsyslog.conf` ]];
 then
     echo -e "\n# LDAP log" >> /etc/rsyslog.conf
@@ -212,7 +211,7 @@ EOF
 ldapmodify -Y EXTERNAL -H ldapi:/// -f ${ldifDirectory}/acl.ldif
 
 
-ccat <<EOF > ${ldifDirectory}/baseTop.ldif
+cat <<EOF > ${ldifDirectory}/baseTop.ldif
 dn: ${OLolcSuffix}
 dc: ldap
 objectClass: top
@@ -300,8 +299,9 @@ EOF
 
 ldapadd -x -D cn=Manager,${OLolcSuffix} -w ${OLolcRootPPW} -f ${ldifDirectory}/ppolicy-password.ldif
 
-
 ###syncprov
+if [ "$1" == "slave" ];
+then
 cat <<EOF > ${ldifDirectory}/syncrepl-slave-replication.ldif
 dn: olcDatabase={2}hdb,cn=config
 changetype: modify
@@ -318,9 +318,41 @@ olcSyncRepl: rid=300
   retry="30 5 300 3"
   interval=00:00:05:00
 EOF
+    ldapadd -Y EXTERNAL -H ldapi:/// -f ${ldifDirectory}/syncrepl-slave-replication.ldif
+    echo -e "syncprov slave\n"
+else
+cat <<EOF > ${ldifDirectory}/syncrepl-master-replicator.ldif
+dn: uid=replicator,${OLolcSuffix}
+uid: replicator
+objectclass: account
+objectClass: simpleSecurityObject
+description: Replication User
+userPassword: qwER12#$
+EOF
 
-ldapadd -Y EXTERNAL -H ldapi:/// -f ${ldifDirectory}/syncrepl-slave-replication.ldif
+    ldapadd -x -D cn=Manager,${OLolcSuffix} -w ${OLolcRootPPW} -f ${ldifDirectory}/syncrepl-master-replicator.ldif
 
+cat <<EOF > ${ldifDirectory}/syncrepl-master-module.ldif
+dn: cn=module,cn=config
+objectClass: olcModuleList
+cn: module
+olcModulePath: /usr/lib64/openldap
+olcModuleLoad: syncprov.la
+EOF
+
+    ldapadd -Y EXTERNAL -H ldapi:/// -f ${ldifDirectory}/syncrepl-master-module.ldif
+
+cat <<EOF > ${ldifDirectory}/syncrepl-master-syncprov.ldif
+dn: olcOverlay=syncprov,olcDatabase={2}hdb,cn=config
+objectClass: olcOverlayConfig
+objectClass: olcSyncProvConfig
+olcOverlay: syncprov
+olcSpSessionLog: 100
+EOF
+
+    ldapadd -Y EXTERNAL -H ldapi:/// -f ${ldifDirectory}/syncrepl-master-syncprov.ldif
+    echo -e "syncprov master\n"
+fi
 
 ldapsearch -Q -LLL -Y EXTERNAL -H ldapi:/// -b cn=schema,cn=config dn
 ldapsearch -H ldapi:/// -Y EXTERNAL -b "cn=config" -LLL -Q "olcDatabase=*" dn

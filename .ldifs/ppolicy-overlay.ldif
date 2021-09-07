@@ -1,0 +1,7 @@
+dn: olcOverlay=ppolicy,olcDatabase={2}hdb,cn=config
+objectClass: olcOverlayConfig
+objectClass: olcPpolicyConfig
+olcOverlay: ppolicy
+olcPPolicyDefault: cn=default,ou=Policies,dc=ldap,dc=4wxyz,dc=com
+olcPPolicyUseLockout: FALSE
+olcPPolicyHashCleartext: TRUE

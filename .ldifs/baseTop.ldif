@@ -1,0 +1,11 @@
+dn: dc=ldap,dc=4wxyz,dc=com
+dc: ldap
+objectClass: top
+objectClass: dcObject
+objectclass: organization
+o: ldap.4wxyz.com Corporation
+
+dn: cn=Manager,dc=ldap,dc=4wxyz,dc=com
+cn: Manager
+objectClass: organizationalRole
+description: Directory Manager
