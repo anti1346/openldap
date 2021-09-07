@@ -1,8 +1,8 @@
 #!/bin/bash
 
 ### ENV
-ldapIp1=211.239.123.218
-ldapIp2=211.239.123.216
+ldapIp1=1.1.1.1
+ldapIp2=2.2.2.2
 ldapHostname1=ldap1
 ldapHostname2=ldap2
 ldapFqdn1=ldap1.4wxyz.com
