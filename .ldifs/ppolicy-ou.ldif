@@ -1,5 +1,0 @@
-dn: ou=Policies,dc=ldap,dc=4wxyz,dc=com
-ou: Policies
-objectClass: top
-objectClass: extensibleObject
-objectClass: organizationalUnit

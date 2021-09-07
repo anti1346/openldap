@@ -1,6 +1,0 @@
-dn: uid=replicator,dc=ldap,dc=4wxyz,dc=com
-uid: replicator
-objectclass: account
-objectClass: simpleSecurityObject
-description: Replication User
-userPassword: qwER12#$
