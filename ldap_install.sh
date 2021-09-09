@@ -147,7 +147,7 @@ cat <<EOF > ${ldifDirectory}/certificate.sh
 openssl req -newkey rsa:4096 -x509 -sha256 -days 3650 -nodes \
 -out /etc/openldap/certs/${OLDomain}.crt \
 -keyout /etc/openldap/certs/${OLDomain}.key \
--subj "/C=KR/ST=Seoul/L=Jongno-gu/O=MoneyToday/OU=Infrastructure Team/CN=${OLDomain}"
+-subj "/C=KR/ST=Seoul/L=Jongno-gu/O=4wxyz/OU=Infrastructure Team/CN=${OLDomain}"
 EOF
 chmod +x ${ldifDirectory}/certificate.sh
 sh ${ldifDirectory}/certificate.sh
@@ -212,7 +212,7 @@ dn: olcDatabase={1}monitor,cn=config
 changetype: modify
 replace: olcAccess
 olcAccess: {0}to * by dn.base="gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth" read
-  by dn.base="cn=Manager,dc=ldap,dc=mt,dc=co,dc=kr" read by * none
+  by dn.base="cn=Manager,${OLolcSuffix}" read by * none
 EOF
 ldapmodify -Y EXTERNAL -H ldapi:/// -f ${ldifDirectory}/monitor.ldif
 echo -e "\033[0;31mmonitor.ldif END"
