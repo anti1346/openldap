@@ -13,7 +13,7 @@ cat <<\EOF > ldifs/ldapGroupAdd.sh
 # ./ldapGroupAdd.sh ID GID
 
 ### ENV
-export $(grep -v '^#' .env | xargs)
+export $(grep -v '^#' ../.env | xargs)
 
 if [ ! -d .tmp ];
 then
@@ -39,7 +39,7 @@ cat <<\EOF > ldifs/ldapUserAdd.sh
 # ./ldapUserAdd.sh ID "NAME" UID
 
 ### ENV
-export $(grep -v '^#' .env | xargs)
+export $(grep -v '^#' ../.env | xargs)
 
 if [ ! -d .tmp ];
 then
@@ -93,7 +93,7 @@ cat <<\EOF > ldifs/ldapsearch.sh
 # ./ldapsearch.sh
 
 ### ENV
-export $(grep -v '^#' .env | xargs)
+export $(grep -v '^#' ../.env | xargs)
 
 echo "Group ID :"
 ldapsearch -h 127.0.0.1 -x -b "${OLolcSuffix}" "(cn=*)" | egrep 'gidNumber' | sort -r | uniq
