@@ -3,3 +3,5 @@
 .ldifs
 ldifs
 ldifs/.tmp
+pattern.txt
+dirsync.sh
