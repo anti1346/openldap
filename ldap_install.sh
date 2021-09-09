@@ -1,20 +1,7 @@
 #!/bin/bash
 
 ### ENV
-ldapIp1=1.1.1.1
-ldapIp2=2.2.2.2
-ldapHostname1=ldap1
-ldapHostname2=ldap2
-ldapFqdn1=ldap1.4wxyz.com
-ldapFqdn2=ldap2.4wxyz.com
-
-ldifDirectory=.ldifs
-
-OLolcRootPW='{SSHA}RqXZJWxwxEXqybRWFN+eWi/NpUDhnLVJ'
-OLolcRootPPW='passwd1!'
-OLDomain='ldap.4wxyz.com'
-OLolcSuffix='dc=ldap,dc=4wxyz,dc=com'
-
+export $(grep -v '^#' .env | xargs)
 
 ### 호스트 네임 등록
 if [[ -z `grep ldap /etc/hosts` ]];
